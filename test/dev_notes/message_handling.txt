@@ -1,0 +1,50 @@
+//initialization of globals
+
+var global.m = 0; //declare a current message;
+
+//get payload
+var payload = payload(); //get payload,type and size -- check
+var type = getType(payload);  
+var size = getSize(payload);
+
+//if type is 19, then it implies a new message has arrived, so we replace the previous message.
+
+if(type === 19 && payload.length !== 0){
+	var message = createNewMessage(payload,type,size + 8);
+	global.m = message;
+}
+else if(global.m == 0){
+	return; //if a type 19 hasn't arrived yet, then exit process
+}
+else{
+	global.m.appendPayloadToCurrentMessage(payload);
+}
+
+//check either the newly created message or the recently appended message, this will update the complete status of the message.
+global.m.checkIfMessageComplete();
+
+if(global.m.complete == true){
+	decode(global.m);
+	global.m = 0;
+}
+
+function Message(buffer, type, size){
+	this.data = buffer;
+	this.type = type;
+	this.size = size;
+	this.complete = false;
+}
+
+Message.prototype.appendPayloadToCurrentMessage= function(payload){
+	this.data = Buffer.concat([this.data,payload]);
+}
+
+Message.prototype.checkIfMessageComplete = function(){
+	if(this.data.length >= this.size){
+		this.complete = true;
+		if(this.data.length > this.size){
+			var newData = this.data.slice(0,this.size);
+			this.data = newData;
+		}
+	}
+}

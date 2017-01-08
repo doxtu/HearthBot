@@ -1,0 +1,24 @@
+{
+  "name": "hearthbot",
+  "version": "0.0.1",
+  "description": "Automatically plays brainless deck",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bot",
+    "hearthstone"
+  ],
+  "author": "doxtu",
+  "license": "ISC",
+  "dependencies": {
+    "cap": "^0.1.2",
+    "farseer": "^4.0.0",
+    "hearthstonejson": "^0.2.1",
+    "ip": "^1.1.4",
+    "protobufjs": "^6.3.1",
+    "robotjs": "^0.4.5"
+  }
+}

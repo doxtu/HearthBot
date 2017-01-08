@@ -1,0 +1,3 @@
+MY GAME ID:
+hi: Long { low: 1465140039, high: 33554433, unsigned: true },
+  lo: Long { low: 30433002, high: 0, unsigned: true } }
