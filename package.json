@@ -18,6 +18,7 @@
     "farseer": "^4.0.0",
     "hearthstonejson": "^0.2.1",
     "ip": "^1.1.4",
+    "moment": "^2.17.1",
     "protobufjs": "^6.3.1",
     "robotjs": "^0.4.5"
   }

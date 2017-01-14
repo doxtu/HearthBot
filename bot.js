@@ -5,8 +5,11 @@ var PowerHistory = require("./src/capture");
 var Game = require("./src/game").game;
 var GameListener = require("./src/game");
 
-//this program must be ran from the select deck screen.
-//deck must be selected and mode must be chosen.
+// Todo list:
+// -Signal when game over
+// -Signal turn change after all updates complete
+// -Ignore position 0 on board, find hero cards. Hero cards are deleted from board. create play field for them? 
+// -Track Current Resources
 
 var myGame = new Game();
 // var SHASAI = new SHASAI();
@@ -23,7 +26,6 @@ PowerHistory.on("decoded", function(decoded){
 
 GameListener.on("turn",function(playerEntityId){
 	if(myGame.FriendlyEntityId === playerEntityId){
-		//parse board, execute turn;
 		console.log("YOUR TURN");
 	}
 });

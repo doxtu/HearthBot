@@ -32,6 +32,7 @@ var Game = (function(){
 		this.running = false;
 		this.FriendlyTurn = false; //Is it your turn?
 		this.FriendlyEntityId = 2;
+		this.current = 0;
 	}
 
 	Game.prototype.updateGame = function(message){
@@ -108,7 +109,7 @@ var Game = (function(){
 				this.EnemyHand.push(this.entities[i]);
 			}
 			else if(!this.entities[i].mine && this.entities[i].zone === Zone.GRAVEYARD){
-				this.graveyard.push(entities[i]);
+				this.graveyard.push(this.entities[i]);
 			}
 		}
 
@@ -121,17 +122,36 @@ var Game = (function(){
 		this.EnemyDeck = sort(this.EnemyDeck); 
 		
 		// console.log(this.entities);
-		console.log("---------------------------------------------");
-		console.log("---------------------------------------------");
-		console.log("ENEMY HAND:", this.EnemyHand);
-		console.log("ENEMY BOARD:",this.EnemyBoard);
-		console.log("---------------------------------------------");
-		console.log("FRIENDLY BOARD:", this.FriendlyBoard);
-		console.log("FRIENDLY HAND:",this.FriendlyHand);
-		console.log("---------------------------------------------");
-		console.log("---------------------------------------------");	
+		
+		// console.log("*********************************************");
+		// console.log("-------------------ENEMY---------------------");
+		// console.log("-------------------HAND----------------------");
+		// for(var i in this.EnemyHand){
+			// console.log("[ID:" + this.EnemyHand[i].id + ",POS:" + this.EnemyHand[i].position + ",COST:" + this.EnemyHand[i].cost  + "]");
+		// }
+		// console.log("-------------------BOARD---------------------");
+		// for(var i in this.EnemyBoard){
+			// console.log("[ID:" + this.EnemyBoard[i].id + ",POS:" + this.EnemyBoard[i].position + ",COST:" + this.EnemyBoard[i].cost + "]");
+		// }
+		// console.log("---------------------------------------------");
+		// for(var i in this.FriendlyBoard){
+			// console.log("[ID:" + this.FriendlyBoard[i].id + ",POS:" + this.FriendlyBoard[i].position + ",COST:" + this.FriendlyBoard[i].cost + "]");
+		// }
+		// console.log("-------------------BOARD----------------------");
+		// for(var i in this.FriendlyHand){
+			// console.log("[ID:" + this.FriendlyHand[i].id + ",POS:" + this.FriendlyHand[i].position + ",COST:" + this.FriendlyHand[i].cost + "]");
+		// }
+		// console.log("--------------------HAND---------------------");
+		// console.log("-------------------FRIEND--------------------");
+		// console.log("*********************************************");
+		// console.log(" ");
+		
+		if(this.FriendlyTurn) module.exports.emit("turn",this.current);
+		this.FriendlyTurn = false;
+		this.current = 0;
 	}
 	
+	//this function destroys the hero entities
 	function sort(arr){	
 		var returnArr = [];
 		for(var i in arr){
@@ -246,8 +266,8 @@ var Game = (function(){
 				break;
 			case GameTag.CURRENT_PLAYER:
 				if(context.game.FriendlyEntityId === tag.value + 1) context.game.FriendlyTurn = true;
-				console.log(tag.value);
-				module.exports.emit("turn", tag.value + 1); //may want to emit at end of updates
+				context.game.current = tag.value + 1;
+				// module.exports.emit("turn", tag.value + 1); 
 				break;	
 			case GameTag.COST:
 				context.cost = tag.value;
