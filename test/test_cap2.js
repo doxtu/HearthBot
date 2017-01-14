@@ -121,8 +121,6 @@ function decode(message){
 				console.log("PLAYER2_GAID:", decodedPowerHistory.list[i].createGame.players[1].gameAccountId);
 				console.log("PLAYER1_ENTITY:", decodedPowerHistory.list[i].createGame.players[0].entity);
 				console.log("PLAYER2_ENTITY:", decodedPowerHistory.list[i].createGame.players[1].entity);
-				console.log("PLAYER1_TAGS:", decodedPowerHistory.list[i].createGame.players[0].entity.tags);
-				console.log("PLAYER2_TAGS:", decodedPowerHistory.list[i].createGame.players[1].entity.tags);
 			}
 			if(decodedPowerHistory.list[i].hasOwnProperty("fullEntity")){
 				console.log("!!!!!!!!!!!!!!!!!FULL_ENTITY!!!!!!!!!!!!!!!!!");
