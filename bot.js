@@ -7,8 +7,7 @@ var GameListener = require("./src/game");
 
 // Todo list:
 // -Signal when game over
-// -Signal turn change after all updates complete
-// -Ignore position 0 on board, find hero cards. Hero cards are deleted from board. create play field for them? 
+// -Track health of minions, and resolve overstayed minion bug
 // -Track Current Resources
 
 var myGame = new Game();
@@ -24,14 +23,25 @@ PowerHistory.on("decoded", function(decoded){
 	myGame.updateGame(decoded);
 });
 
-GameListener.on("turn",function(playerEntityId){
-	if(myGame.FriendlyEntityId === playerEntityId){
+GameListener.on("turn",function(turn){
+	if(myGame.FriendlyTurn === turn){
 		console.log("YOUR TURN");
 	}
 });
 
+GameListener.on("over",function(loser){
+	if(myGame.FriendlyEntityId === loser){
+		console.log("GAME LOST");
+	}
+	else{
+		console.log("GAME WON");
+	}
+	cleanup();
+});
+
 function cleanup(){
-	//myGame = new Game();
+	myGame = new Game();
+	myGame.startGame();
 }
 
 function parseGame(Game){
