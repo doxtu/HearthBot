@@ -5,19 +5,9 @@ var PowerHistory = require("./src/capture");
 var Game = require("./src/game").game;
 var GameListener = require("./src/game");
 
-// Todo list:
-// -Signal when game over
-// -Track health of minions, and resolve overstayed minion bug
-// -Track Current Resources
-
 var myGame = new Game();
+myGame.startGame();
 // var SHASAI = new SHASAI();
-
-if(!myGame.running){
-	//controller.startGame();
-	myGame.startGame();
-	//myGame.mulligan();
-}
 
 PowerHistory.on("decoded", function(decoded){
 	myGame.updateGame(decoded);
@@ -25,7 +15,11 @@ PowerHistory.on("decoded", function(decoded){
 
 GameListener.on("turn",function(turn){
 	if(myGame.FriendlyTurn === turn){
+		console.log("----------------------");
 		console.log("YOUR TURN");
+		console.log("YOUR MANA:",myGame.mana);
+		console.log("----------------------");
+		console.log(" ");
 	}
 });
 
@@ -36,6 +30,7 @@ GameListener.on("over",function(loser){
 	else{
 		console.log("GAME WON");
 	}
+	console.log(" ");
 	cleanup();
 });
 

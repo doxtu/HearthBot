@@ -31,6 +31,7 @@ var Game = (function(){
 		this.graveyard = [];
 		this.running = false;
 		this.FriendlyTurn = false; //Is it your turn?
+		this.mana = 0;
 		this.loser = 0;
 		this.FriendlyEntityId = 2;
 	}
@@ -57,20 +58,13 @@ var Game = (function(){
 			else if(message[i].hasOwnProperty("tagChange")){
 				try{
 					this.entities[message[i].tagChange.entity - 1].updateCard(message[i].tagChange);
-				}catch(e){
-					var NEW_ENTITY = new Card(this).updateCard(message[i].tagChange);
-					this.entities[message[i].tagChange.entity - 1] = NEW_ENTITY;
-				}
+				}catch(e){}
 			}
 			else if(message[i].hasOwnProperty("showEntity")){
 				try{
 					this.entities[message[i].showEntity.entity - 1].updateCard(message[i].showEntity.tags);
 					this.entities[message[i].showEntity.entity - 1].name = message[i].name;
-					
-				}catch(e){
-					var NEW_ENTITY = new Card(this).updateCard(message[i].showEntity.tags);
-					this.entities[message[i].showEntity.entity - 1] = NEW_ENTITY;
-				}
+				}catch(e){}
 			}
 		}
 		
@@ -115,28 +109,28 @@ var Game = (function(){
 		
 		// console.log(this.entities);
 		
-		console.log("*********************************************");
-		console.log("-------------------ENEMY---------------------");
-		console.log("-------------------HAND----------------------");
-		for(var i in this.EnemyHand){
-			console.log("[ID:" + this.EnemyHand[i].id + ",POS:" + this.EnemyHand[i].position + ",COST:" + this.EnemyHand[i].cost  + "]");
-		}
-		console.log("-------------------BOARD---------------------");
-		for(var i in this.EnemyBoard){
-			console.log("[ID:" + this.EnemyBoard[i].id + ",POS:" + this.EnemyBoard[i].position + ",COST:" + this.EnemyBoard[i].cost + ",HEALTH:" + this.EnemyBoard[i].current_health + "]");
-		}
-		console.log("---------------------------------------------");
-		for(var i in this.FriendlyBoard){
-			console.log("[ID:" + this.FriendlyBoard[i].id + ",POS:" + this.FriendlyBoard[i].position + ",COST:" + this.FriendlyBoard[i].cost + ",HEALTH:" + this.FriendlyBoard[i].current_health  + "]");
-		}
-		console.log("-------------------BOARD----------------------");
-		for(var i in this.FriendlyHand){
-			console.log("[ID:" + this.FriendlyHand[i].id + ",POS:" + this.FriendlyHand[i].position + ",COST:" + this.FriendlyHand[i].cost + "]");
-		}
-		console.log("--------------------HAND---------------------");
-		console.log("-------------------FRIEND--------------------");
-		console.log("*********************************************");
-		console.log(" ");
+		// console.log("*********************************************");
+		// console.log("-------------------ENEMY---------------------");
+		// console.log("-------------------HAND----------------------");
+		// for(var i in this.EnemyHand){
+			// console.log("[ID:" + this.EnemyHand[i].id + ",POS:" + this.EnemyHand[i].position + ",COST:" + this.EnemyHand[i].cost  + "]");
+		// }
+		// console.log("-------------------BOARD---------------------");
+		// for(var i in this.EnemyBoard){
+			// console.log("[ID:" + this.EnemyBoard[i].id + ",POS:" + this.EnemyBoard[i].position + ",COST:" + this.EnemyBoard[i].cost + ",HEALTH:" + this.EnemyBoard[i].current_health + "]");
+		// }
+		// console.log("---------------------------------------------");
+		// for(var i in this.FriendlyBoard){
+			// console.log("[ID:" + this.FriendlyBoard[i].id + ",POS:" + this.FriendlyBoard[i].position + ",COST:" + this.FriendlyBoard[i].cost + ",HEALTH:" + this.FriendlyBoard[i].current_health  + "]");
+		// }
+		// console.log("-------------------BOARD----------------------");
+		// for(var i in this.FriendlyHand){
+			// console.log("[ID:" + this.FriendlyHand[i].id + ",POS:" + this.FriendlyHand[i].position + ",COST:" + this.FriendlyHand[i].cost + "]");
+		// }
+		// console.log("--------------------HAND---------------------");
+		// console.log("-------------------FRIEND--------------------");
+		// console.log("*********************************************");
+		// console.log(" ");
 		
 		if(!this.running) module.exports.emit("over", this.loser);
 		if(this.FriendlyTurn) module.exports.emit("turn",true);
@@ -198,6 +192,7 @@ var Game = (function(){
 		this.attack = 0;
 		this.health = 0;
 		this.current_health = 0;
+		this.armor = 0;
 		this.charge = 0;
 		this.divineshield = 0;
 		this.taunt = 0;
@@ -233,7 +228,10 @@ var Game = (function(){
 				context.current_health = tag.value;
 				break;
 			case GameTag.DAMAGE:
-				context.current_health = context.health - tag.value;
+				context.current_health = context.health - tag.value + context.armor;
+				break;
+			case GameTag.ARMOR:
+				context.armor = tag.value;
 				break;
 			case GameTag.CHARGE:
 				context.charge = tag.value;
@@ -258,6 +256,9 @@ var Game = (function(){
 				break;	
 			case GameTag.COST:
 				context.cost = tag.value;
+				break;
+			case GameTag.RESOURCES:
+				context.game.mana = tag.value;
 				break;
 			case GameTag.CONTROLLER:
 				if(context.game.FriendlyEntityId === tag.value + 1) context.mine = true;
