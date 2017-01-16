@@ -3,12 +3,12 @@ var screenSize = robot.getScreenSize();
 var movement = require("../src/movement");
 var Controller = new movement();
 
-robot.setMouseDelay(300);
+// robot.setMouseDelay(300);
 console.log(robot.getMousePos());
 // console.log(screenSize.width, screenSize.height);
 
-robot.moveMouse(screenSize.width/2, screenSize.height/2);
-robot.mouseClick();
+// robot.moveMouse(screenSize.width/2, screenSize.height/2);
+// robot.mouseClick();
 
 // function startGame(){
 	// robot.setMouseDelay(1250);
@@ -27,7 +27,7 @@ robot.mouseClick();
 // }
 
 
-var source = {locale:"hand",size:4,target:"pos1"};
-var target = {locale:"boardf",size:1,target:"pos1"};
-
-Controller.move(source,target);
+// var source = {locale:"hand",size:5,pos:"pos1"};
+// var target = {locale:"play",size:1,pos:"pos1"};
+// var end = {locale:"endturn"};
+// Controller.click(end);
