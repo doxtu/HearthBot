@@ -1,11 +1,12 @@
 var robot = require("robotjs");
+var screenSize = robot.getScreenSize();
 
-robot.setMouseDelay(300);
+// robot.setMouseDelay(300);
 console.log(robot.getMousePos());
-console.log(screenSize.width, screenSize.height);
+// console.log(screenSize.width, screenSize.height);
 
-robot.moveMouse(screenSize.width/2, screenSize.height/2);
-robot.mouseClick();
+// robot.moveMouse(screenSize.width/2, screenSize.height/2);
+// robot.mouseClick();
 
 function startGame(){
 	robot.setMouseDelay(1250);
