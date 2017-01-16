@@ -1,7 +1,7 @@
 var cards = require("../lib/cards.json");
 var enums = require("../lib/enums.json");
 
-console.log(enums.GameTag);
+// console.log(enums.GameTag);
 
 { ADDITIONAL_PLAY_REQS_1: 515,
   ADDITIONAL_PLAY_REQS_2: 516,
