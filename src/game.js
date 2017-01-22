@@ -32,12 +32,14 @@ var Game = (function(){
 		this.running = false;
 		this.mulligan = false;
 		this.FriendlyTurn = false; //Is it your turn?
-		this.mana = 0;
+		this.mana = 1;
 		this.loser = 0;
 		this.FriendlyEntityId = 2;
 	}
 
 	Game.prototype.updateGame = function(message){
+		
+		
 		
 		for(var i in message){
 			if(message[i].hasOwnProperty("createGame")){
@@ -108,8 +110,6 @@ var Game = (function(){
 			}
 		}
 		
-		// console.log(this.entities);
-		
 		// console.log("*********************************************");
 		// console.log("-------------------ENEMY---------------------");
 		// console.log("-------------------HAND----------------------");
@@ -132,6 +132,8 @@ var Game = (function(){
 		// console.log("-------------------FRIEND--------------------");
 		// console.log("*********************************************");
 		// console.log(" ");
+		
+		console.log(this.FriendlyTurn);
 		
 		if(!this.running) module.exports.emit("over", this.loser);
 		if(this.FriendlyTurn) module.exports.emit("turn",true);

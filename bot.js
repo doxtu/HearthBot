@@ -1,5 +1,3 @@
-var robot = require("robotjs");
-var screenSize = robot.getScreenSize();
 var protobuf = require("protobufjs");
 var PowerHistory = require("./src/capture");
 var Game = require("./src/game").game;
