@@ -1,0 +1,14 @@
+move(source, target)
+
+source = hand,board,hero
+target = opponent,enemy board,emote,discover,mulligan
+
+example source:
+
+{locale: "hand", size:hand.size pos:"pos1"}
+example target
+
+{locale:"boardf", size:board.size pos:"pos1"};
+
+
+plays card from position1 and puts it on the left side of board

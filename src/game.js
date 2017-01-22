@@ -30,6 +30,7 @@ var Game = (function(){
 		this.EnemyDeck = [];  //unknown cards
 		this.graveyard = [];
 		this.running = false;
+		this.mulligan = false;
 		this.FriendlyTurn = false; //Is it your turn?
 		this.mana = 0;
 		this.loser = 0;
@@ -158,6 +159,7 @@ var Game = (function(){
 
 	Game.prototype.startGame = function(){
 		this.running = true;
+		this.mulligan = true;
 		return;
 	}
 
