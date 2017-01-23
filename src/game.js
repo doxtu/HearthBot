@@ -133,8 +133,6 @@ var Game = (function(){
 		// console.log("*********************************************");
 		// console.log(" ");
 		
-		console.log(this.FriendlyTurn);
-		
 		if(!this.running) module.exports.emit("over", this.loser);
 		if(this.FriendlyTurn) module.exports.emit("turn",true);
 		this.FriendlyTurn = false;
@@ -161,7 +159,6 @@ var Game = (function(){
 
 	Game.prototype.startGame = function(){
 		this.running = true;
-		this.mulligan = true;
 		return;
 	}
 
@@ -271,6 +268,12 @@ var Game = (function(){
 				if(tag.value === 5 || tag.value === 6 || tag.value === 7 || tag.value === 8){
 					context.game.running = false;
 					context.game.loser = tag.entity;
+				}
+				break;
+			case GameTag.NEXT_STEP:
+				if(tag.value === 4){
+					this.mulligan = true;
+					module.exports.emit("mulligan");
 				}
 				break;
 			default:

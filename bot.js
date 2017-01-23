@@ -13,27 +13,21 @@ PowerHistory.on("decoded", function(decoded){
 	myGame.updateGame(decoded);
 });
 
-GameListener.on("turn",function(turn){
-	var mulligan = false;
-	var myTurn = false;
-	if(myGame.mulligan){
-			console.log("----------------------");
-			console.log("MULLIGAN");
-			console.log("----------------------");
-			myGame.mulligan = false;
-			mulligan = true;
-	}
-	if(myGame.FriendlyTurn === turn){
+GameListener.on("turn",function(turn,mulligan){
+	if(myGame.FriendlyTurn){
 		console.log("----------------------");
 		console.log("YOUR TURN");
 		console.log("YOUR MANA:",myGame.mana);
 		console.log("----------------------");
 		console.log(" ");
-		myTurn = true;
 	}
-	
-	//SHASAI decides turn.
-	//CONTROLLER EXECUTES.
+});
+
+GameListener.on("mulligan",function(){
+	console.log("----------------------");
+	console.log("MULLIGAN");
+	console.log("----------------------");
+	myGame.mulligan = false;
 });
 
 GameListener.on("over",function(loser){
