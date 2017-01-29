@@ -5,7 +5,12 @@
 //assign a value to each play
 //find the best one and return
 
-var cards = 
+var TreeModel = require("tree-model");
+var tree = new TreeModel();
+
+function modelAction(type,source,target,card){
+	return {"type": type, "source":source, "target":target, "card":card "children":[]};
+}
 
 var SHASAI = (function(){
 	
@@ -24,49 +29,28 @@ var SHASAI = (function(){
 	}
 	
 	SHASAI.prototype.mulligan(){
-		var action = {locale: null, size: null, pos:null};
+		//read mulligan cards (current hand)
+		//keep 1 and 2 mana, discard rest
 		return action;
 	}
 	
 	SHASAI.prototype.construct(){
-		var action = {locale: null, size: null, pos:null};
+		//identify array of possible plays
+		//evaluate the best play
+		//turn the best play into an action sequence.
 		return action;
 	}
 	
-	identifyPlays(){
-		//play type --> {type: "play", target:{locale:"play",size:1,pos:"pos1"}};
-		//attack type --> {type:"attack",start: {locale:"boardf",size:1,pos:"pos1"}, target:{locale:"boarde",size:1,pos:"pos1"}};
-		var self = this;
-		var plays = [];
-		var remainingMana = this.mana;
-		// for(var i in self.friendlyHand){
-			// var play = [];
-			// if(self.friendlyHand[i].cost < remainingMana){
-				// var play = {"type":"play", "target":{"locale":"play"}};
-			// }
-			// plays.push(play);
-		// }
+	function identifyPlays(){
 		
-		/*
-			Insert a loop here for different possibilities for playing cards.
-		*/
-		
+		return plays;
 	}
 	
-	_isPlayInCurrentPlayVector(plays,play){
-		for(var i in plays){
-			var playInPlays = JSON.stringify(plays[i]);
-			var playToBeChecked = JSON.stringify(play);
-			if(playInPlays === playToBeChecked)
-				return true;
-		}
-		return false;
-	}
-	
-	evalPlays(plays){
-		
+	function evalPlays(plays){	
 	}
 	
 	return SHASAI;
 	
 })();
+
+module.exports = SHASAI;
