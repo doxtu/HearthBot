@@ -35,14 +35,24 @@ var SHASAI = (function(){
 	}
 	
 	SHASAI.prototype.construct(){
-		//identify array of possible plays
-		//evaluate the best play
+		//identify all possible card combinations store in array
+		var plays = identifyPlays();
+		var play = evalPlays(plays);
+		//attack with all cards, including ones that were just played. even if they can't attack.
 		//turn the best play into an action sequence.
 		return action;
 	}
 	
 	function identifyPlays(){
+		var hand = this.friendlyHand;
+		var boardf = this.friendlyBoard;
+		var mana = this.mana;
+		var boarde = this.enemyBoard;
+		var plays = [];
 		
+		hand.forEach(function(card,i){
+			
+		});
 		return plays;
 	}
 	
