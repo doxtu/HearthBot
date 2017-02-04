@@ -50,9 +50,24 @@ var SHASAI = (function(){
 		var boarde = this.enemyBoard;
 		var plays = [];
 		
-		hand.forEach(function(card,i){
+		//first must identify all possible UNIQUE combinations in hand.
+		//how to do this? review the below code for ideas
+		// function combinations(str) {
+			// var fn = function(active, rest, a) {
+				// if (!active && !rest)
+					// return;
+				// if (!rest) {
+					// a.push(active);
+				// } else {
+					// fn(active + rest[0], rest.slice(1), a);
+					// fn(active, rest.slice(1), a);
+				// }
+				// return a;
+			// }
 			
-		});
+			// return fn("", str, []);
+		// }
+	
 		return plays;
 	}
 	
