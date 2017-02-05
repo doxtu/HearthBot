@@ -10,7 +10,6 @@ var myGame;
 cleanup();
 
 PowerHistory.on("decoded", function(decoded){
-	console.log(decoded);
 	myGame.updateGame(decoded);
 	AI.update(myGame);
 });
