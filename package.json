@@ -15,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "cap": "^0.1.2",
+    "combinations": "^0.1.1",
     "farseer": "^4.0.0",
     "hearthstonejson": "^0.2.1",
     "ip": "^1.1.4",

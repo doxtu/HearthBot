@@ -5,6 +5,9 @@
 //assign a value to each play
 //find the best one and return
 
+var combinations = require("combinations");
+
+
 var TreeModel = require("tree-model");
 var tree = new TreeModel();
 
@@ -44,30 +47,29 @@ var SHASAI = (function(){
 	}
 	
 	function identifyPlays(){
+		
 		var hand = this.friendlyHand;
 		var boardf = this.friendlyBoard;
 		var mana = this.mana;
 		var boarde = this.enemyBoard;
 		var plays = [];
+		var playCombinations = combinations(hand);
+		console.log("-----------------------");
+		console.log("ORIGINAL:",playCombinations);
+		console.log("-----------------------");
 		
-		//first must identify all possible UNIQUE combinations in hand.
-		//how to do this? review the below code for ideas
-		// function combinations(str) {
-			// var fn = function(active, rest, a) {
-				// if (!active && !rest)
-					// return;
-				// if (!rest) {
-					// a.push(active);
-				// } else {
-					// fn(active + rest[0], rest.slice(1), a);
-					// fn(active, rest.slice(1), a);
-				// }
-				// return a;
-			// }
-			
-			// return fn("", str, []);
-		// }
-	
+		playCombinations.reduce(function(play){
+			var playMana = mana;
+			play.forEach(function(card){
+				playMana -= card.cost;
+			});
+			return playMana > 0;
+		});
+		
+		console.log("-----------------------");
+		console.log("REDUCED:",playCombinations);
+		console.log("-----------------------");
+		
 		return plays;
 	}
 	
