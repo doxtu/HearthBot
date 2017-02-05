@@ -4,22 +4,25 @@ var Game = require("./src/game").game;
 var GameListener = require("./src/game");
 var movement = require("./src/movement");
 var Controller = new movement();
-
+var SHASAI = require("./src/SHASAI");
+var AI = new SHASAI();
 var myGame;
 cleanup();
-// var SHASAI = new SHASAI();
 
 PowerHistory.on("decoded", function(decoded){
+	console.log(decoded);
 	myGame.updateGame(decoded);
+	AI.update(myGame);
 });
 
 GameListener.on("turn",function(turn,mulligan){
 	if(myGame.FriendlyTurn){
-		console.log("----------------------");
-		console.log("YOUR TURN");
-		console.log("YOUR MANA:",myGame.mana);
-		console.log("----------------------");
-		console.log(" ");
+		// console.log("----------------------");
+		// console.log("YOUR TURN");
+		// console.log("YOUR MANA:",myGame.mana);
+		// console.log("----------------------");
+		// console.log(" ");
+		AI.construct();
 	}
 });
 

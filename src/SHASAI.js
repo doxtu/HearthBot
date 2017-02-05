@@ -12,68 +12,85 @@ var TreeModel = require("tree-model");
 var tree = new TreeModel();
 
 function modelAction(type,source,target,card){
-	return {"type": type, "source":source, "target":target, "card":card "children":[]};
+	return {"type": type, "source":source, "target":target, "card":card, "children":[]};
 }
 
 var SHASAI = (function(){
 	
-	function SHASAI(game){
+	function SHASAI(){
+		this.mana = 1;
+		this.friendlyBoard = [];
+		this.friendlyHand = [];
+		this.enemyBoard = [];
+	}
+	
+	SHASAI.prototype.update = function(game){
 		this.mana = game.mana;
 		this.friendlyBoard = game.FriendlyBoard;
 		this.friendlyHand = game.FriendlyHand;
 		this.enemyBoard = game.EnemyBoard;
 	}
 	
-	SHASAI.prototype.update(game){
-		this.mana = game.mana;
-		this.friendlyBoard = game.FriendlyBoard;
-		this.friendlyHand = game.FriendlyHand;
-		this.enemyBoard = game.EnemyBoard;
-	}
-	
-	SHASAI.prototype.mulligan(){
+	SHASAI.prototype.mulligan = function(){
 		//read mulligan cards (current hand)
 		//keep 1 and 2 mana, discard rest
 		return action;
 	}
 	
-	SHASAI.prototype.construct(){
+	SHASAI.prototype.construct = function(){
 		//identify all possible card combinations store in array
-		var plays = identifyPlays();
-		var play = evalPlays(plays);
-		//attack with all cards, including ones that were just played. even if they can't attack.
-		//turn the best play into an action sequence.
-		return action;
-	}
-	
-	function identifyPlays(){
 		
 		var hand = this.friendlyHand;
 		var boardf = this.friendlyBoard;
 		var mana = this.mana;
 		var boarde = this.enemyBoard;
-		var plays = [];
-		var playCombinations = combinations(hand);
-		console.log("-----------------------");
-		console.log("ORIGINAL:",playCombinations);
-		console.log("-----------------------");
+		var action = identifyPlays();
 		
-		playCombinations.reduce(function(play){
-			var playMana = mana;
-			play.forEach(function(card){
-				playMana -= card.cost;
+		function identifyPlays(){
+			var playCombinations = combinations(hand);
+			var plays = playCombinations.filter(function(play){
+				try{
+					var playMana = mana;
+					play.forEach(function(card){
+						playMana -= card.cost;
+					});
+					return playMana > 0;
+				}catch(e){
+					return false;
+				}
 			});
-			return playMana > 0;
-		});
+			return evalPlays(plays);
+		}
 		
-		console.log("-----------------------");
-		console.log("REDUCED:",playCombinations);
-		console.log("-----------------------");
+		function evalPlays(plays){
+			var eval = plays.map(function(play){
+				try{
+					play.forEach(function(card){
+						if(card.attack && card.health){
+							return (card.attack + card.health + card.divineShield + card.taunt + card.windfury);
+						}
+						else{
+							return 1;
+						}
+					});
+				}catch(e){
+					return 0;
+				}
+			});
+			
+			var max = Math.max.apply(Math,eval);
+			
+			return actionify(plays[eval.indexOf(max)]);
+		}
 		
-		return plays;
-	}
-	
-	function evalPlays(plays){	
+		function actionify(play){
+			console.log("----------------------");
+			console.log("THE_BEST_PLAY:");
+			console.log(play);
+			console.log("----------------------");
+		}
+		
+		return action;
 	}
 	
 	return SHASAI;
