@@ -37,13 +37,16 @@ var SHASAI = (function(){
 		
 		if(hand.length > 0){
 			action = hand.map(function(card){
-				var ret = (card.cost > 2) ? 1 : 0;
-				return ret;
-			}).map(function(click,i){
+				if(card.cost > 2) return 1;
+				return 0;
+			})
+			action = action.map(function(click,i){
 				if(hand.length > 3 && action[i] == 1){
 					return {locale:"mulligan", order:"second",pos:"pos" + hand[i].pos};
-				} else{
+				} else if(hand.length < 4 && action[i] == 1){
 					return {locale:"mulligan", order:"first",pos:"pos" + hand[i].pos};
+				} else{
+					return null;
 				}
 			});
 		}
@@ -73,6 +76,9 @@ var SHASAI = (function(){
 					return false;
 				}
 			});
+			
+			console.log("plays", plays);
+			
 			return evalPlays(plays);
 		}
 		
@@ -81,7 +87,7 @@ var SHASAI = (function(){
 				var sum =0;
 				try{
 					play.forEach(function(card){
-						if(card.attack && card.health){
+						if(card.health){
 							sum += (card.attack + card.health + card.divineshield + card.taunt + card.windfury);
 						}
 						else{
@@ -90,7 +96,6 @@ var SHASAI = (function(){
 					});
 				}catch(e){
 					console.log("opps");
-					return 0;
 				}
 				return sum;
 			});

@@ -58,6 +58,7 @@ var Controller = (function(){
 	};
 	
 	Controller.prototype.click = function(target){
+		if(!target) return;
 		
 		robot.setMouseDelay(1000);
 		var x,y;
