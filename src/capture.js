@@ -35,7 +35,8 @@ module.exports = new events();
 	];
 	
 	var c = new Cap();
-	var device = Cap.findDevice(ipUtils.address());
+	// var device = Cap.findDevice(ipUtils.address());
+	var device = Cap.findDevice('192.168.0.7');
 	var filter = '(tcp or udp) and ((dst port 1119 or dst port 3724) or (src port 1119 or src port 3724))';
 	var bufSize = 10 * 1024 * 1024;
 	var buffer = Buffer.alloc(65535);
@@ -51,7 +52,6 @@ module.exports = new events();
 
 	c.on("packet", function(nbytes,trunc){
 		var payload;
-		console.log("HI I'M HERE");
 		if(linkType === "ETHERNET"){
 			var ret = decoders.Ethernet(buffer);
 			if(ret.info.type === PROTOCOL.ETHERNET.IPV4){
@@ -65,7 +65,6 @@ module.exports = new events();
 						//Decoding TCP stream and getting payload
 						ret= decoders.TCP(buffer,ret.offset);
 						payload = buffer.slice(ret.offset, nbytes);
-						console.log("pl",payload);
 						handlePayload(Buffer.from(payload));
 					}
 					else if(ret.info.protocol === PROTOCOL.IP.UDP){

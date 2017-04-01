@@ -198,7 +198,6 @@ var Game = (function(){
 		this.divineshield = 0;
 		this.taunt = 0;
 		this.windfury = 0;
-		this.name = 0;
 		this.zone = 0;
 		this.position = 0;
 		this.cost = 0;

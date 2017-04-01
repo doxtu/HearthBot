@@ -16,12 +16,13 @@ PowerHistory.on("decoded", function(decoded){
 
 GameListener.on("turn",function(turn,mulligan){
 	if(myGame.FriendlyTurn){
-		// console.log("----------------------");
-		// console.log("YOUR TURN");
-		// console.log("YOUR MANA:",myGame.mana);
-		// console.log("----------------------");
-		// console.log(" ");
-		AI.construct();
+		console.log("----------------------");
+		console.log("YOUR TURN");
+		console.log("YOUR MANA:",myGame.mana);
+		console.log("----------------------");
+		console.log(" ");
+		var action = AI.construct();
+		Controller.turn(action);
 	}
 });
 
@@ -29,6 +30,9 @@ GameListener.on("mulligan",function(){
 	console.log("----------------------");
 	console.log("MULLIGAN");
 	console.log("----------------------");
+	console.log(" ");
+	var action = AI.mulligan();
+	Controller.mulligan(action);
 	myGame.mulligan = false;
 });
 
@@ -44,6 +48,7 @@ GameListener.on("over",function(loser){
 		console.log("----------------------");
 	}
 	console.log(" ");
+	process.exit();
 	cleanup();
 });
 

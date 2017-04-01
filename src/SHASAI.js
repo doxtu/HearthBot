@@ -6,8 +6,6 @@
 //find the best one and return
 
 var combinations = require("combinations");
-
-
 var TreeModel = require("tree-model");
 var tree = new TreeModel();
 
@@ -24,7 +22,7 @@ var SHASAI = (function(){
 		this.enemyBoard = [];
 	}
 	
-	SHASAI.prototype.update = function(game){
+	SHASAI.prototype.update = function(game){		
 		this.mana = game.mana;
 		this.friendlyBoard = game.FriendlyBoard;
 		this.friendlyHand = game.FriendlyHand;
@@ -34,17 +32,33 @@ var SHASAI = (function(){
 	SHASAI.prototype.mulligan = function(){
 		//read mulligan cards (current hand)
 		//keep 1 and 2 mana, discard rest
+		var hand = this.friendlyHand;
+		var action = [{locale:"confirm"}];
+		
+		if(hand.length > 0){
+			action = hand.map(function(card){
+				var ret = (card.cost > 2) ? 1 : 0;
+				return ret;
+			}).map(function(click,i){
+				if(hand.length > 3 && action[i] == 1){
+					return {locale:"mulligan", order:"second",pos:"pos" + hand[i].pos};
+				} else{
+					return {locale:"mulligan", order:"first",pos:"pos" + hand[i].pos};
+				}
+			});
+		}
+		
 		return action;
 	}
 	
 	SHASAI.prototype.construct = function(){
 		//identify all possible card combinations store in array
-		
+		var self = this;
 		var hand = this.friendlyHand;
 		var boardf = this.friendlyBoard;
 		var mana = this.mana;
 		var boarde = this.enemyBoard;
-		var action = identifyPlays();
+		var action = identifyPlays() || [];
 		
 		function identifyPlays(){
 			var playCombinations = combinations(hand);
@@ -54,7 +68,7 @@ var SHASAI = (function(){
 					play.forEach(function(card){
 						playMana -= card.cost;
 					});
-					return playMana > 0;
+					return playMana >= 0;
 				}catch(e){
 					return false;
 				}
@@ -64,32 +78,54 @@ var SHASAI = (function(){
 		
 		function evalPlays(plays){
 			var eval = plays.map(function(play){
+				var sum =0;
 				try{
 					play.forEach(function(card){
 						if(card.attack && card.health){
-							return (card.attack + card.health + card.divineShield + card.taunt + card.windfury);
+							sum += (card.attack + card.health + card.divineshield + card.taunt + card.windfury);
 						}
 						else{
-							return 1;
+							sum += 1;
 						}
 					});
 				}catch(e){
+					console.log("opps");
 					return 0;
 				}
+				return sum;
 			});
-			
 			var max = Math.max.apply(Math,eval);
 			
 			return actionify(plays[eval.indexOf(max)]);
 		}
 		
 		function actionify(play){
-			console.log("----------------------");
-			console.log("THE_BEST_PLAY:");
-			console.log(play);
-			console.log("----------------------");
+			//provides an array of cards, turn each of those into an array of actions
+			if(!play) return [];
+			var ret = play.map(function(card){
+				if(card.attack == 0 && card.health == 0)
+					return {
+						source:{locale:"hand",size:hand.length,pos:"pos" + card.position},
+						target:{locale:"enemy"}
+					}
+				else{
+					self.friendlyBoard.unshift(card);
+					return {
+						source:{locale:"hand",size:hand.length,pos:"pos" + card.position},
+						target:{locale:"play"}
+					}
+				}
+			});
+			
+			self.friendlyBoard.forEach(function(card){
+				ret.push({
+					source:{locale:"hand",size:hand.length,pos:"pos" + card.position},
+					target:{locale:"enemy"}
+				});
+			});
+			
+			return ret;
 		}
-		
 		return action;
 	}
 	
