@@ -50,7 +50,8 @@ module.exports = new events();
 	console.log('Press ctrl+c to quit.');
 
 	c.on("packet", function(nbytes,trunc){
-		var payload
+		var payload;
+		console.log("HI I'M HERE");
 		if(linkType === "ETHERNET"){
 			var ret = decoders.Ethernet(buffer);
 			if(ret.info.type === PROTOCOL.ETHERNET.IPV4){
@@ -64,6 +65,7 @@ module.exports = new events();
 						//Decoding TCP stream and getting payload
 						ret= decoders.TCP(buffer,ret.offset);
 						payload = buffer.slice(ret.offset, nbytes);
+						console.log("pl",payload);
 						handlePayload(Buffer.from(payload));
 					}
 					else if(ret.info.protocol === PROTOCOL.IP.UDP){
