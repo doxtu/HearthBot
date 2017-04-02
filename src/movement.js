@@ -12,29 +12,32 @@ var Controller = (function(){
 	
 	Controller.prototype.turn = function(actionSeq){
 		var self = this;
-		setTimeout(function(){
-			actionSeq.forEach(function(action){
+		actionSeq.forEach(function(action){
+			if(!action) return;
 			self.move(action.source,action.target);
-			});
-		
-			self.click({locale:"endturn"});
-			},30*1000);
+		});
 	};
+	
+	Controller.prototype.endTurn = function(){
+		this.click({locale:"endturn"});
+	}
+	
+	Controller.prototype.heroPower = function(){
+		this.click({locale:"heropower"});
+	}
 	
 	Controller.prototype.mulligan = function(clickSeq){
 		var self = this;
-		setTimeout(function(){
-			clickSeq.forEach(function(action){
-				self.click(action);
-			});
-			
-			self.click({locale:"confirm"});				
-		},20*1000);
+		clickSeq.forEach(function(action){
+			self.click(action);
+		});
+		
+		self.click({locale:"confirm"});				
 	};
 	
 	Controller.prototype.move = function(source, target){
 		// var mouseDelay = Math.floor(Math.random()*1000);
-		robot.setMouseDelay(1000);
+		robot.setMouseDelay(300);
 		var src_x,src_y,trg_x,trg_y;
 		
 		if(source.locale === "hand" || source.locale === "boardf"||source.locale === "heropower"){
@@ -60,7 +63,7 @@ var Controller = (function(){
 	Controller.prototype.click = function(target){
 		if(!target) return;
 		
-		robot.setMouseDelay(1000);
+		robot.setMouseDelay(300);
 		var x,y;
 		
 		if(target.locale != "mulligan"){

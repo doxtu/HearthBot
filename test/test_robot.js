@@ -4,11 +4,11 @@ var movement = require("../src/movement");
 var Controller = new movement();
 
 robot.setMouseDelay(300);
-// console.log(robot.getMousePos());
+console.log(robot.getMousePos());
 console.log(screenSize.width, screenSize.height);
 
-robot.moveMouse(screenSize.width/2, screenSize.height/2);
-robot.mouseClick();
+// robot.moveMouse(screenSize.width/2, screenSize.height/2);
+// robot.mouseClick();
 
 function startGame(){
 	robot.setMouseDelay(1250);
@@ -27,13 +27,13 @@ function moveCardToPlay(card, handSize){
 }
 
 
-var source = {locale:"hand",size:5,pos:"pos3"};
-var target = {locale:"play",size:1,pos:"pos1"};
-Controller.move(source,target);
+// var source = {locale:"hand",size:5,pos:"pos3"};
+// var target = {locale:"play",size:1,pos:"pos1"};
+// Controller.move(source,target);
 
-var source = {locale:"boardf",size:3,pos:"pos1"};
-var target = {locale:"boarde",size:2,pos:"pos2"};
-Controller.move(source,target);
+// var source = {locale:"boardf",size:3,pos:"pos1"};
+// var target = {locale:"boarde",size:2,pos:"pos2"};
+// Controller.move(source,target);
 
-var end = {locale:"endturn"};
-Controller.click(end);
+// var end = {locale:"endturn"};
+// Controller.click(end);

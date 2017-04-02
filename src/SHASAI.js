@@ -20,13 +20,19 @@ var SHASAI = (function(){
 		this.friendlyBoard = [];
 		this.friendlyHand = [];
 		this.enemyBoard = [];
+		this.game = null;
 	}
 	
 	SHASAI.prototype.update = function(game){		
 		this.mana = game.mana;
-		this.friendlyBoard = game.FriendlyBoard;
+		this.friendlyBoard = game.FriendlyBoard.filter(function(card){
+			return card.position > 0;
+		});
 		this.friendlyHand = game.FriendlyHand;
-		this.enemyBoard = game.EnemyBoard;
+		this.enemyBoard = game.EnemyBoard.filter(function(card){
+			return card.position > 0;
+		});
+		this.game = game;
 	}
 	
 	SHASAI.prototype.mulligan = function(){
@@ -42,9 +48,9 @@ var SHASAI = (function(){
 			})
 			action = action.map(function(click,i){
 				if(hand.length > 3 && action[i] == 1){
-					return {locale:"mulligan", order:"second",pos:"pos" + hand[i].pos};
+					return {locale:"mulligan", order:"second",pos:"pos" + hand[i].position};
 				} else if(hand.length < 4 && action[i] == 1){
-					return {locale:"mulligan", order:"first",pos:"pos" + hand[i].pos};
+					return {locale:"mulligan", order:"first",pos:"pos" + hand[i].position};
 				} else{
 					return null;
 				}
@@ -54,13 +60,15 @@ var SHASAI = (function(){
 		return action;
 	}
 	
-	SHASAI.prototype.construct = function(){
+	SHASAI.prototype.play = function(){
 		//identify all possible card combinations store in array
 		var self = this;
-		var hand = this.friendlyHand;
-		var boardf = this.friendlyBoard;
-		var mana = this.mana;
-		var boarde = this.enemyBoard;
+		var hand = this.friendlyHand || [];
+		var boardf = this.friendlyBoard.filter(function(card){
+			return card.position > 0;
+		});
+		var mana = this.mana || 0;
+		var boarde = this.enemyBoard || [];
 		var action = identifyPlays() || [];
 		
 		function identifyPlays(){
@@ -77,7 +85,7 @@ var SHASAI = (function(){
 				}
 			});
 			
-			console.log("plays", plays);
+			// console.log("plays:", plays);
 			
 			return evalPlays(plays);
 		}
@@ -101,6 +109,8 @@ var SHASAI = (function(){
 			});
 			var max = Math.max.apply(Math,eval);
 			
+			// console.log("best-play:",plays[eval.indexOf(max)]);
+			
 			return actionify(plays[eval.indexOf(max)]);
 		}
 		
@@ -114,7 +124,6 @@ var SHASAI = (function(){
 						target:{locale:"enemy"}
 					}
 				else{
-					self.friendlyBoard.unshift(card);
 					return {
 						source:{locale:"hand",size:hand.length,pos:"pos" + card.position},
 						target:{locale:"play"}
@@ -122,15 +131,22 @@ var SHASAI = (function(){
 				}
 			});
 			
-			self.friendlyBoard.forEach(function(card){
-				ret.push({
-					source:{locale:"hand",size:hand.length,pos:"pos" + card.position},
-					target:{locale:"enemy"}
-				});
-			});
-			
 			return ret;
 		}
+		
+		return action;
+	}
+	
+	SHASAI.prototype.attack = function(){
+		var action = null,boardf = this.friendlyBoard,boarde = this.enemyBoard;
+		
+		action = boardf.map(function(card){
+			return {
+				source:{locale:"boardf",size:boardf.length,pos:"pos" + card.position},
+				target:{locale:"enemy"}
+			}
+		});
+		
 		return action;
 	}
 	
