@@ -64,7 +64,7 @@ function cleanup(){
 		var action = AI.mulligan();
 		setTimeout(function(){
 			Controller.mulligan(action);
-		},16*1000);
+		},18*1000);
 		localDecode = localMulligan = null;
 		startGlobalDecode();
 	});
@@ -111,13 +111,13 @@ function startGlobalTurn(){
 						var action = AI.play();
 						Controller.turn(action);
 						s();
-					},30*1000);
+					},8*1000);
 				}),
 				new Promise(function(s,f){
 					setTimeout(function(){
 						AI.update(myGame);
 						s();
-					},45*1000);
+					},10*1000);
 				})
 			]).then(function(){
 				var action = AI.attack();
