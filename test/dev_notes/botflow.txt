@@ -1,0 +1,57 @@
+Todo:
+
+-Fix bot flow sequence. Currently, this is how the bot works:
+
+1. Sets up to listen to incoming data.
+2. Runs mulligan state.
+3. Runs first turn
+4. Sets up global turn/decode
+5. Waits and executes turns holistically. 
+
+This is how the bot should work:
+
+1. Take in initial data correctly (verify)
+2. Mulligan and wait for turn
+3. Analyze board and hand. (when turn comes)
+4. Make play (play card, attack, heropower)
+5. Update AI state.
+6. Return to 3 until no more possible moves.
+7. End turn.
+8. Wait for next turn.
+
+------------
+Example code
+------------
+
+//Variable declaration,
+//and listening for powerhistory
+
+init();
+
+//When data is received, update AI/Game
+onData () => 
+Game.update() && AI.update();
+
+
+//Mulligan will happen first no matter what
+//Make sure that it happens first
+onMulligan(
+	AI.mulligan();
+	Game.update() && AI.update();
+	if(firstTurn) turn();
+)
+
+//make sure the AI waits while the move is being
+//made and that it allows the game to update
+turn () =>
+	while(mana > 0)
+		AI.makemove();
+	AI.endturn();
+
+//cleanup and be neato burrito
+over() =>
+	AI.wellplayed();
+	cleanup();
+	AI.startnew();
+	init();
+	gamecount++;

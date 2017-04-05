@@ -8,7 +8,7 @@ var SHASAI = require("./src/SHASAI");
 var AI = new SHASAI();
 var myGame, beginSequence,globalTurn,globalDecode;
 
-cleanup();
+init();
 
 GameListener.on("over",function(loser){
 	if(myGame.FriendlyEntityId === loser){
@@ -23,14 +23,14 @@ GameListener.on("over",function(loser){
 	}
 	console.log(" ");
 	process.exit();
-	cleanup();
 });
 
-function cleanup(){
+function init(){
 	myGame = new Game();
 	myGame.startGame();
+	//this seems illogical and out of order
 	startFirstTurn();
-	
+	//this is the first logical action that should happen
 	Promise.all([
 		new Promise(function(s,f){
 			PowerHistory.once("decoded", function(decoded){
@@ -61,6 +61,8 @@ function cleanup(){
 			});			
 		})
 	]).then(function(){
+		//why does the asyncronous action happen here?
+		//this should also be a promise
 		var action = AI.mulligan();
 		setTimeout(function(){
 			Controller.mulligan(action);
@@ -72,6 +74,7 @@ function cleanup(){
 }
 
 function startFirstTurn(){
+	//this should be merged somewhere as a promise in the init function
 	GameListener.once("turn",function(turn,mulligan){			
 		if(myGame.FriendlyTurn){
 			console.log("----------------------");
@@ -79,6 +82,11 @@ function startFirstTurn(){
 			console.log("YOUR MANA:",myGame.mana);
 			console.log("----------------------");
 			console.log(" ");
+			//strange use of timeout. should instead signal end of mulligan
+			//via a promise or some other construct
+			//should also switch between AI parsing and play.
+			//One move at a time would be ideal
+			//this becomes even more try in the startGlobalTurn function
 			new Promise(function(s,f){
 				setTimeout(function(){
 					startGlobalTurn();
@@ -131,14 +139,13 @@ function startGlobalTurn(){
 }
 
 function startGlobalDecode(){
+		//strange that you have to do it this way. Is this even valid?
 		globalDecode = PowerHistory.on("decoded", function(decoded){
 			new Promise(function(su,fa){
 				myGame.updateGame(decoded);
-				// console.log("game-updated");
 				su();				
 			}).then(function(){
 				AI.update(myGame);
-				// console.log("ai-updated");
 			});
 		});	
 }
