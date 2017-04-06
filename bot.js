@@ -5,8 +5,7 @@ var GameListener = require("./src/game");
 var movement = require("./src/movement");
 var Controller = new movement();
 var SHASAI = require("./src/SHASAI");
-var AI = new SHASAI();
-var myGame, beginSequence,globalTurn,globalDecode;
+var myGame;
 
 init();
 
@@ -28,6 +27,7 @@ GameListener.on("over",function(loser){
 function init(){
 	myGame = new Game();
 	myGame.startGame();
+	AI = new SHASAI(myGame);
 	//this seems illogical and out of order
 	startFirstTurn();
 	//this is the first logical action that should happen
@@ -44,7 +44,6 @@ function init(){
 					console.log("game-updated");
 					su();				
 				}).then(function(){
-					AI.update(myGame);
 					console.log("ai-updated");
 					s();
 				});
@@ -96,7 +95,6 @@ function startFirstTurn(){
 					s();
 				},30*1000);				
 			}).then(function(){
-				AI.update(myGame);
 				Controller.heroPower();
 				Controller.endTurn();
 			});
@@ -123,7 +121,6 @@ function startGlobalTurn(){
 				}),
 				new Promise(function(s,f){
 					setTimeout(function(){
-						AI.update(myGame);
 						s();
 					},10*1000);
 				})
@@ -145,7 +142,6 @@ function startGlobalDecode(){
 				myGame.updateGame(decoded);
 				su();				
 			}).then(function(){
-				AI.update(myGame);
 			});
 		});	
 }

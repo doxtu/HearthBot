@@ -11,7 +11,7 @@ module.exports = new events();
 var cards = require("../lib/cards.json");
 var GameTag = require("../lib/enums.json").GameTag;
 var Zone = require("../lib/enums.json").Zone;
-var ACCOUNT_ID = {hi: {low:1465140039, high:33554433, unsigned:true}, lo: {low:30433002, high:0, unsigned:true}};
+const ACCOUNT_ID = {hi: {low:1465140039, high:33554433, unsigned:true}, lo: {low:30433002, high:0, unsigned:true}};
 
 // MY_GAMEACCOUNTID: Message {
   // hi: Long { low: 1465140039, high: 33554433, unsigned: true },
@@ -38,8 +38,6 @@ var Game = (function(){
 	}
 
 	Game.prototype.updateGame = function(message){
-		
-		
 		
 		for(var i in message){
 			if(message[i].hasOwnProperty("createGame")){
@@ -134,7 +132,7 @@ var Game = (function(){
 		// console.log(" ");
 		
 		if(!this.running) module.exports.emit("over", this.loser);
-		if(this.FriendlyTurn) module.exports.emit("turn",true);
+		module.exports.emit("turn",true);
 		this.FriendlyTurn = false;
 	}
 	
