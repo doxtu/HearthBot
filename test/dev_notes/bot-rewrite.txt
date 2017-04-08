@@ -23,9 +23,9 @@ when it's my turn and it's NOT the mulligan
 
 create a turn stack to begin execution after mulligan phase has ended?
 
-1) set timeout to give time for graphics
-2) Calculate best move
-2.5) set one time data listener
+1) set timeout to give time for graphics (promise)
+2) Calculate best move (AI)
+2.5) set one time data listener (promise with previous)
 3) Execute move (hero power/play/etc)
 4) Update Game && AI 
 5) Repeat 2-4 until no more mana;

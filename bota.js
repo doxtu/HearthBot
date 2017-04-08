@@ -4,7 +4,7 @@ var GameListener = require("./src/game");
 var movement = require("./src/movement");
 var Controller = new movement();
 var SHASAI = require("./src/SHASAI");
-var myGame;
+var myGame,turnStack = [];
 
 /*
 	INITIALIZE FOR SETUP AND CLOSING
@@ -28,7 +28,6 @@ GameListener.on("over",function(loser){
 
 function init(){
 	myGame = new Game();
-	AI = new SHASAI(myGame);
 	myGame.startGame();
 	
 	Promise.all([
@@ -43,33 +42,76 @@ function init(){
 	});
 }
 
-//BOT SPECIFIC ACTIONS
+//BOT SPECIFIC ACTIONS: 
+//turn is the 1st turn, and then every turn after, turnAfterFirst is used
 
-function mulligan(){
+function mulligan(turn){
 	var action = AI.mulligan();
 	new Promise(function(s,f){
 		setTimeout(function(){
 			Controller.mulligan(action);
-			s();
-		},18*1000);		
+			if(turn == 1)
+				s();
+			else
+				f();
+		},19*1000);		
 	})
-	.then(waitForTurn);
+	.then(executeTurn)
+	.catch(gameControl)
 }
 
 function turn(passed){
 	//Execute mulligan controls and wait
+	AI = new SHASAI(myGame);
 	if(passed[2] == 1){
 		console.log("--YOU-GO-FIRST--\n");
-		//Mulligan and then take turn after mulligan completed;
 	}
 	else if(passed[2] == 2){
 		console.log("--YOU-GO-SECOND--\n");
-		//Initialize global turn listener;
 	}	
+	mulligan(passed[2]);
 }
 
+function turnAfterFirst(passed){
+	if(passed[2] == 1){
+		console.log("--YOUR-TURN--\n");
+	}
+}
+
+//GAME CONTROL FLOW
+
+function gameControl(){
+	Promise.all([
+		new Promise()
+	])
+}
+
+function executeTurn(){
+	//execute move, analyze, repeat, and then pass to game control
+	new Promise(function(s,f){
+		setTimeout(function(){
+			
+		},10*1000)
+	})
+}
+
+function executeMove(){
+	//determine the ONE play and then return to execute turn
+}
+
+//DATA LISTENERS
+	
+function decodedHandler(){
+	console.log("--DATA-IN--\n");
+	myGame.updateGame(decoded);		
+}
+
+function openDecode(){
+	PowerHistory.on("decoded",decodedHandler);	
+}
 
 //PROMISE FUNCTIONS, ASYNCRONOUS ACTIONS
+
 
 function waitForInitialDecode(s,f){
 	PowerHistory.once("decoded",function(decoded){

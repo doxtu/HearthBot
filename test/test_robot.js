@@ -7,6 +7,13 @@ robot.setMouseDelay(300);
 console.log(robot.getMousePos());
 console.log(screenSize.width, screenSize.height);
 
+new Promise(function(s,f){
+	if(robot.moveMouseSmooth(10,10))
+		s();
+}).then(function(){
+	console.log("RESOLVED");
+})
+
 // robot.moveMouse(screenSize.width/2, screenSize.height/2);
 // robot.mouseClick();
 
