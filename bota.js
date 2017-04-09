@@ -49,8 +49,7 @@ function mulligan(turn){
 	var action = AI.mulligan();
 	new Promise(function(s,f){
 		setTimeout(function(){
-			Controller.mulligan(action);
-			if(turn == 1)
+			if(Controller.mulligan(action) && turn == 1)
 				s();
 			else
 				f();
@@ -86,13 +85,18 @@ function gameControl(){
 	])
 }
 
-function executeTurn(){
+function executeTurn(move){
 	//execute move, analyze, repeat, and then pass to game control
+	var action;
 	new Promise(function(s,f){
+		if(move) s();
 		setTimeout(function(){
-			
+			action = AI.play();
+			s();
 		},10*1000)
 	})
+	.then(waitForInitialDecode)
+	
 }
 
 function executeMove(){

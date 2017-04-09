@@ -16,14 +16,16 @@ var Controller = (function(){
 			if(!action) return;
 			self.move(action.source,action.target);
 		});
+		
+		return self.move(width/2,height/2);
 	};
 	
 	Controller.prototype.endTurn = function(){
-		this.click({locale:"endturn"});
+		return this.click({locale:"endturn"});
 	}
 	
 	Controller.prototype.heroPower = function(){
-		this.click({locale:"heropower"});
+		return this.click({locale:"heropower"});
 	}
 	
 	Controller.prototype.mulligan = function(clickSeq){
@@ -32,7 +34,7 @@ var Controller = (function(){
 			self.click(action);
 		});
 		
-		self.click({locale:"confirm"});				
+		return self.click({locale:"confirm"});				
 	};
 	
 	Controller.prototype.move = function(source, target){
