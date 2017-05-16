@@ -83,6 +83,7 @@ var SHASAI = (function(){
 		
 		var self = this;
 		var hand = this.FriendlyHand || [];
+		console.log("hand", hand);
 		var boardf = this.FriendlyBoard.filter(function(card){
 			return card.position > 0;
 		});

@@ -47,7 +47,6 @@ function init(){
 //turn is the 1st turn, and then every turn after, turnAfterFirst is used
 
 function mulligan(turn){
-	console.log("mulligan phase",turn,"\n");
 	var action = AI.mulligan();
 	new Promise(function(s,f){
 		setTimeout(function(){
@@ -65,10 +64,8 @@ function mulligan(turn){
 
 function turn(passed){
 	//Execute mulligan controls and wait
-	console.log("updated game & ai\n");
 	var friendly = null;
 	AI = new SHASAI(myGame);	
-	console.log("corrected ai data:",AI.corrected);
 	if(AI.corrected && passed[2] == 1){
 		passed[2] = 2;
 	} else if(AI.corrected && passed[2] == 2){
@@ -97,15 +94,12 @@ function gameControl(){
 
 function executeTurn(move){
 	//execute move, analyze, repeat, and then pass to game control
-	console.log("attempting to execute turn\n",move,"\n");
 	var action = [];
 	new Promise(function(s,f){
 		setTimeout(function(){
-			console.log("friendly hand size",myGame.FriendlyHand.length);
 			action = AI.play();
-			console.log("timer over, AI made play\n");
 			s();
-		},10*1000)
+		},11*1000)
 	})
 	.then(function(){
 		return new Promise(executeMove)
@@ -129,7 +123,7 @@ function decodedHandler(decoded){
 }
 
 function openDecode(){
-	console.log("opened decoder\n");
+	console.log("--OPENED-DECODER--\n");
 	PowerHistory.on("decoded",decodedHandler);	
 }
 
@@ -146,6 +140,7 @@ function waitForInitialDecode(s,f){
 		//initial decode
 		console.log("--INITIAL-DECODE--\n");
 		myGame.updateGame(decoded);
+		AI = new SHASAI(myGame);
 		s();
 	});	
 }
