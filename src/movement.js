@@ -10,14 +10,9 @@ var Controller = (function(){
 		
 	}
 	
-	Controller.prototype.turn = function(actionSeq){
-		var self = this;
-		actionSeq.forEach(function(action){
-			if(!action) return;
-			self.move(action.source,action.target);
-		});
-		
-		return self.move(width/2,height/2);
+	Controller.prototype.turn = function(action){
+		if(!action) return 1;
+		return this.move(action.source,action.target);
 	};
 	
 	Controller.prototype.endTurn = function(){
@@ -58,8 +53,7 @@ var Controller = (function(){
 		robot.moveMouseSmooth(src_x,src_y);
 		robot.mouseToggle(["down"],["left"]);
 		robot.moveMouseSmooth(trg_x,trg_y);
-		robot.mouseToggle(["up"],["left"]);
-	
+		return robot.mouseToggle(["up"],["left"]);
 	};
 	
 	Controller.prototype.click = function(target){
@@ -77,7 +71,7 @@ var Controller = (function(){
 		}
 		
 		robot.moveMouseSmooth(x,y);
-		robot.mouseClick();
+		return robot.mouseClick();
 	}
 	
 	return Controller;

@@ -23,6 +23,7 @@ GameListener.on("over",function(loser){
 		console.log("----------------------");
 	}
 	console.log(" ");
+	closeDecode();
 	process.exit();
 });
 
@@ -46,13 +47,16 @@ function init(){
 //turn is the 1st turn, and then every turn after, turnAfterFirst is used
 
 function mulligan(turn){
+	console.log("mulligan phase",turn,"\n");
 	var action = AI.mulligan();
 	new Promise(function(s,f){
 		setTimeout(function(){
-			if(Controller.mulligan(action) && turn == 1)
-				s();
-			else
-				f();
+			if(Controller.mulligan(action)){
+				if(turn == 1)
+					s();
+				else
+					f();
+			}
 		},19*1000);		
 	})
 	.then(executeTurn)
@@ -61,57 +65,77 @@ function mulligan(turn){
 
 function turn(passed){
 	//Execute mulligan controls and wait
-	AI = new SHASAI(myGame);
-	if(passed[2] == 1){
-		console.log("--YOU-GO-FIRST--\n");
+	console.log("updated game & ai\n");
+	var friendly = null;
+	AI = new SHASAI(myGame);	
+	console.log("corrected ai data:",AI.corrected);
+	if(AI.corrected && passed[2] == 1){
+		passed[2] = 2;
+	} else if(AI.corrected && passed[2] == 2){
+		passed[2] = 1;
 	}
-	else if(passed[2] == 2){
-		console.log("--YOU-GO-SECOND--\n");
-	}	
+	
+	openDecode();
+	
 	mulligan(passed[2]);
-}
-
-function turnAfterFirst(passed){
-	if(passed[2] == 1){
-		console.log("--YOUR-TURN--\n");
-	}
 }
 
 //GAME CONTROL FLOW
 
 function gameControl(){
-	Promise.all([
-		new Promise()
-	])
+	// console.log("game control entered\n");
+	new Promise(waitForTurnInGame)
+	.then(function(passed){
+		if(passed == 1){
+			executeTurn();
+		} else{
+			gameControl();
+		}
+	})
+	.catch(gameControl);
 }
 
 function executeTurn(move){
 	//execute move, analyze, repeat, and then pass to game control
-	var action;
+	console.log("attempting to execute turn\n",move,"\n");
+	var action = [];
 	new Promise(function(s,f){
-		if(move) s();
 		setTimeout(function(){
+			console.log("friendly hand size",myGame.FriendlyHand.length);
 			action = AI.play();
+			console.log("timer over, AI made play\n");
 			s();
 		},10*1000)
 	})
-	.then(waitForInitialDecode)
-	
-}
+	.then(function(){
+		return new Promise(executeMove)
+	})
+	.then(executeTurn)
+	.catch(gameControl);
 
-function executeMove(){
-	//determine the ONE play and then return to execute turn
+	function executeMove(s,f){
+		console.log("executeMove is running\n",action,"\n");
+		//determine the ONE play and then return to execute turn
+		if(action.length>0 && Controller.turn(action.shift())) s(1);
+		else f(Controller.endTurn());
+	}	
 }
 
 //DATA LISTENERS
 	
-function decodedHandler(){
-	console.log("--DATA-IN--\n");
+function decodedHandler(decoded){
+	// console.log("--DATA-IN--\n");
 	myGame.updateGame(decoded);		
 }
 
 function openDecode(){
+	console.log("opened decoder\n");
 	PowerHistory.on("decoded",decodedHandler);	
+}
+
+function closeDecode(){
+	console.log("closed decoder\n");
+	PowerHistory.removeListener("decoded",decodedHandler);
 }
 
 //PROMISE FUNCTIONS, ASYNCRONOUS ACTIONS
@@ -140,5 +164,14 @@ function waitForTurn(s,f){
 			s(1);
 		}
 		s(2);		
+	});
+}
+
+function waitForTurnInGame(s,f){
+	GameListener.once("turn",function(){
+		if(myGame.FriendlyTurn)
+			s(1);
+		else
+			f();
 	});
 }

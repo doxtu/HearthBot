@@ -22,6 +22,7 @@ var SHASAI = (function(){
 		this.FriendlyHand = game.FriendlyHand;
 		this.EnemyBoard = game.EnemyBoard;
 		this.EnemyHand = game.EnemyHand;
+		this.corrected = false;
 		
 		var sum = 0;
 		for(var i = 0; i < game.FriendlyHand.length; i++)
@@ -32,6 +33,18 @@ var SHASAI = (function(){
 			this.FriendlyHand = game.EnemyHand;
 			this.EnemyHand = game.FriendlyHand;
 			this.EnemyBoard = game.FriendlyBoard;
+			
+			game.FriendlyHand.forEach(function(card){
+				card.mine = true;
+			})
+			game.EnemyHand.forEach(function(card){
+				card.mine = false;
+			})
+			
+			if(game.FriendlyEntityId == 2) game.FriendlyEntityId = 3;
+			else if(game.FriendlyEntityId ==3) game.FriendlyEntityId = 2;
+			
+			this.corrected = true;
 		}
 	}
 	
@@ -62,6 +75,12 @@ var SHASAI = (function(){
 	
 	SHASAI.prototype.play = function(){
 		//identify all possible card combinations store in array
+		
+		// this.FriendlyHand = this.game.FriendlyHand;
+		// this.FriendlyBoard = this.game.FriendlyBoard;
+		// this.EnemyBoard = this.game.EnemyBoard;
+		// this.EnemyHand = this.game.EnemyHand;
+		
 		var self = this;
 		var hand = this.FriendlyHand || [];
 		var boardf = this.FriendlyBoard.filter(function(card){
