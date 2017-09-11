@@ -3,7 +3,7 @@ robot.setMouseDelay(300);
 var screenSize = robot.getScreenSize();
 var width = screenSize.width;
 var height = screenSize.height;
-var pos = require("../lib/pos").positionJSON(width,height);
+var pos = require("../src/pos").positionJSON(width,height);
 
 var Controller = (function(){
 	function Controller(){

@@ -1,12 +1,14 @@
-var protobuf = require("protobufjs");
 var PowerHistory = require("./src/capture");
 var Game = require("./src/game").game;
 var GameListener = require("./src/game");
 var movement = require("./src/movement");
 var Controller = new movement();
 var SHASAI = require("./src/SHASAI");
-var myGame;
+var myGame,turnStack = [];
 
+/*
+	INITIALIZE FOR SETUP AND CLOSING
+*/
 init();
 
 GameListener.on("over",function(loser){
@@ -21,127 +23,150 @@ GameListener.on("over",function(loser){
 		console.log("----------------------");
 	}
 	console.log(" ");
+	closeDecode();
 	process.exit();
 });
 
 function init(){
 	myGame = new Game();
 	myGame.startGame();
-	AI = new SHASAI(myGame);
-	//this seems illogical and out of order
-	startFirstTurn();
-	//this is the first logical action that should happen
-	Promise.all([
-		new Promise(function(s,f){
-			PowerHistory.once("decoded", function(decoded){
-				console.log("----------------------");
-				console.log("INITIAL DATA ARRIVAL");
-				console.log("----------------------");
-				console.log(" ");
-			
-				new Promise(function(su,fa){
-					myGame.updateGame(decoded);
-					console.log("game-updated");
-					su();				
-				}).then(function(){
-					console.log("ai-updated");
-					s();
-				});
-			});			
-		}),
-		new Promise(function(s,f){
-			GameListener.once("mulligan",function(){
-				console.log("----------------------");
-				console.log("MULLIGAN");
-				console.log("----------------------");
-				console.log(" ");
-				myGame.mulligan = false;
-				s();
-			});			
-		})
-	]).then(function(){
-		//why does the asyncronous action happen here?
-		//this should also be a promise
-		var action = AI.mulligan();
-		setTimeout(function(){
-			Controller.mulligan(action);
-		},18*1000);
-		localDecode = localMulligan = null;
-		startGlobalDecode();
-	});
 	
+	Promise.all([
+		new Promise(waitForInitialDecode),
+		new Promise(waitForMulligan),
+		new Promise(waitForTurn)
+	])
+	.then(turn)
+	.catch(function(){
+		console.log("Error incurred");
+		process.exit();
+	});
 }
 
-function startFirstTurn(){
-	//this should be merged somewhere as a promise in the init function
-	GameListener.once("turn",function(turn,mulligan){			
-		if(myGame.FriendlyTurn){
-			console.log("----------------------");
-			console.log("YOUR TURN");
-			console.log("YOUR MANA:",myGame.mana);
-			console.log("----------------------");
-			console.log(" ");
-			//strange use of timeout. should instead signal end of mulligan
-			//via a promise or some other construct
-			//should also switch between AI parsing and play.
-			//One move at a time would be ideal
-			//this becomes even more try in the startGlobalTurn function
-			new Promise(function(s,f){
-				setTimeout(function(){
-					startGlobalTurn();
-					var action = AI.play();
-					console.log("ACTION",action);
-					Controller.turn(action);
+//BOT SPECIFIC ACTIONS: 
+//turn is the 1st turn, and then every turn after, turnAfterFirst is used
+
+function mulligan(turn){
+	var action = AI.mulligan();
+	new Promise(function(s,f){
+		setTimeout(function(){
+			if(Controller.mulligan(action)){
+				if(turn == 1)
 					s();
-				},30*1000);				
-			}).then(function(){
-				Controller.heroPower();
-				Controller.endTurn();
-			});
+				else
+					f();
+			}
+		},19*1000);		
+	})
+	.then(executeTurn)
+	.catch(gameControl)
+}
+
+function turn(passed){
+	//Execute mulligan controls and wait
+	var friendly = null;
+	AI = new SHASAI(myGame);	
+	if(AI.corrected && passed[2] == 1){
+		passed[2] = 2;
+	} else if(AI.corrected && passed[2] == 2){
+		passed[2] = 1;
+	}
+	
+	openDecode();
+	
+	mulligan(passed[2]);
+}
+
+//GAME CONTROL FLOW
+
+function gameControl(){
+	// console.log("game control entered\n");
+	new Promise(waitForTurnInGame)
+	.then(function(passed){
+		if(passed == 1){
+			executeTurn();
+		} else{
+			gameControl();
 		}
+	})
+	.catch(gameControl);
+}
+
+function executeTurn(move){
+	//execute move, analyze, repeat, and then pass to game control
+	var action = [];
+	new Promise(function(s,f){
+		setTimeout(function(){
+			action = AI.play();
+			s();
+		},11*1000)
+	})
+	.then(function(){
+		return new Promise(executeMove)
+	})
+	.then(executeTurn)
+	.catch(gameControl);
+
+	function executeMove(s,f){
+		console.log("executeMove is running\n",action,"\n");
+		//determine the ONE play and then return to execute turn
+		if(action.length>0 && Controller.turn(action.shift())) s(1);
+		else f(Controller.endTurn());
+	}	
+}
+
+//DATA LISTENERS
+	
+function decodedHandler(decoded){
+	// console.log("--DATA-IN--\n");
+	myGame.updateGame(decoded);		
+}
+
+function openDecode(){
+	console.log("--OPENED-DECODER--\n");
+	PowerHistory.on("decoded",decodedHandler);	
+}
+
+function closeDecode(){
+	console.log("closed decoder\n");
+	PowerHistory.removeListener("decoded",decodedHandler);
+}
+
+//PROMISE FUNCTIONS, ASYNCRONOUS ACTIONS
+
+
+function waitForInitialDecode(s,f){
+	PowerHistory.once("decoded",function(decoded){
+		//initial decode
+		console.log("--INITIAL-DECODE--\n");
+		myGame.updateGame(decoded);
+		AI = new SHASAI(myGame);
+		s();
+	});	
+}
+
+function waitForMulligan(s,f){
+	GameListener.once("mulligan",function(){
+		console.log("--MULLIGAN--\n");
+		myGame.mulligan = false;
+		s();
 	});
 }
 
-function startGlobalTurn(){
-	GameListener.on("turn",function(turn,mulligan){			
+function waitForTurn(s,f){
+	GameListener.once("turn",function(){
 		if(myGame.FriendlyTurn){
-			console.log("----------------------");
-			console.log("YOUR TURN");
-			console.log("YOUR MANA:",myGame.mana);
-			console.log("----------------------");
-			console.log(" ");
-			
-			Promise.all([
-				new Promise(function(s,f){
-					setTimeout(function(){
-						var action = AI.play();
-						Controller.turn(action);
-						s();
-					},8*1000);
-				}),
-				new Promise(function(s,f){
-					setTimeout(function(){
-						s();
-					},10*1000);
-				})
-			]).then(function(){
-				var action = AI.attack();
-				console.log("ATTACK ACTION:", action);
-				Controller.turn(action);
-				Controller.heroPower();
-				Controller.endTurn();
-			});
+			s(1);
 		}
+		s(2);		
 	});
 }
 
-function startGlobalDecode(){
-		//strange that you have to do it this way. Is this even valid?
-		globalDecode = PowerHistory.on("decoded", function(decoded){
-			new Promise(function(su,fa){
-				myGame.updateGame(decoded);
-				su();				
-			}).then(function(){
-			});
-		});	
+function waitForTurnInGame(s,f){
+	GameListener.once("turn",function(){
+		if(myGame.FriendlyTurn)
+			s(1);
+		else
+			f();
+	});
 }

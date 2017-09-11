@@ -8,9 +8,9 @@
 var events = require("events");
 module.exports = new events();
 
-var cards = require("../lib/cards.json");
-var GameTag = require("../lib/enums.json").GameTag;
-var Zone = require("../lib/enums.json").Zone;
+var cards = require("../res/cards.json");
+var GameTag = require("../res/enums.json").GameTag;
+var Zone = require("../res/enums.json").Zone;
 const ACCOUNT_ID = {hi: {low:1465140039, high:33554433, unsigned:true}, lo: {low:30433002, high:0, unsigned:true}};
 
 // MY_GAMEACCOUNTID: Message {
