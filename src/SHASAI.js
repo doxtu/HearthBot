@@ -6,8 +6,6 @@
 //find the best one and return
 
 var combinations = require("combinations");
-var TreeModel = require("tree-model");
-var tree = new TreeModel();
 
 function modelAction(type,source,target,card){
 	return {"type": type, "source":source, "target":target, "card":card, "children":[]};
