@@ -35,8 +35,8 @@ module.exports = new events();
 	];
 	
 	var c = new Cap();
-	// var device = Cap.findDevice(ipUtils.address());
-	var device = Cap.findDevice('192.168.0.12');
+	var device = Cap.findDevice(ipUtils.address());
+	// var device = Cap.findDevice('192.168.0.12');
 	var filter = '(tcp or udp) and ((dst port 1119 or dst port 3724) or (src port 1119 or src port 3724))';
 	var bufSize = 10 * 1024 * 1024;
 	var buffer = Buffer.alloc(65535);
@@ -89,7 +89,6 @@ module.exports = new events();
 			var reader = protobuf.Reader.create(payload);
 			var type = reader.fixed32() >>> 0;
 			var size = reader.fixed32() >>> 0;
-			
 			if(type === 19 && payload.length != 0){
 				m = new Message(payload,type,size + 8);
 			}
@@ -110,9 +109,10 @@ module.exports = new events();
 	}
 
 	function decode(message){
-		var path = "./proto/PegasusGame.proto";
+		var path = "../proto/PegasusGame.proto";
 		protobuf.load(path, function(err, root){
-			var PowerHistory = root.lookup("PegasusGame.PowerHistory");
+			if(err) throw err;
+			var PowerHistory = root.lookupType("PegasusGame.PowerHistory");
 			var reader = protobuf.Reader.create(message.data);
 			reader.fixed32() >>> 0; reader.fixed32() >>> 0; //clear out the size and type so we get the message;
 			module.exports.emit("decoded",PowerHistory.decode(reader,message.size-10).list);

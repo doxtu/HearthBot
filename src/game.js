@@ -4,6 +4,8 @@
 //are where the actual intelligence of the Game object is.
 //The card object begs to be declared as an object literal, but it's a convenient way to follow the code
 
+"use strict";
+
 //a Game keeps track of all state variables and keeps them updated during a game, will make decisions at the end of a game and a start of a game.
 var events = require("events");
 module.exports = new events();

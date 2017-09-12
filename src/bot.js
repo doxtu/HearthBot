@@ -1,10 +1,12 @@
-var PowerHistory = require("./src/capture");
-var Game = require("./src/game").game;
-var GameListener = require("./src/game");
-var movement = require("./src/movement");
-var Controller = new movement();
-var SHASAI = require("./src/SHASAI");
-var myGame,turnStack = [];
+"use strict"
+
+const PowerHistory = require("./src/capture");
+const Game = require("./src/game").game;
+const GameListener = require("./src/game");
+const movement = require("./src/movement");
+const Controller = new movement();
+const SHASAI = require("./src/SHASAI");
+const myGame,turnStack = [];
 
 /*
 	INITIALIZE FOR SETUP AND CLOSING

@@ -1,11 +1,13 @@
 //SHASAI = Simple Hearthstone AI
 
+"use strict";
+
 //todo:
 //Identify all possible moves (play, attack)
 //assign a value to each play
 //find the best one and return
 
-var combinations = require("combinations");
+const combinations = require("combinations");
 
 function modelAction(type,source,target,card){
 	return {"type": type, "source":source, "target":target, "card":card, "children":[]};
